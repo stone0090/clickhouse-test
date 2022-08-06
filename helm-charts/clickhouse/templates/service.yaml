@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clickhouse.fullname" . }}-svc
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  type: {{ .Values.clickhouse.service_type }}
+  ports:
+  - port: {{ .Values.clickhouse.tcp_port }}
+    nodePort: {{ .Values.clickhouse.tcp_node_port }}
+    targetPort: tcp-port
+    protocol: TCP
+    name: tcp-port
+  - port: {{ .Values.clickhouse.http_port }}
+    nodePort: {{ .Values.clickhouse.http_node_port }}
+    targetPort: http-port
+    protocol: TCP
+    name: http-port
+  - port: {{ .Values.clickhouse.interserver_http_port }}
+    nodePort: {{ .Values.clickhouse.interserver_http_node_port }}
+    targetPort: inter-http-port
+    protocol: TCP
+    name: inter-http-port
+  selector:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}

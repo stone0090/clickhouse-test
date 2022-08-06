@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "clickhouse.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "clickhouse.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.clickhouse.replicas }}
+  selector: 
+    matchLabels: 
+      app.kubernetes.io/name: {{ include "clickhouse.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata: 
+      labels: 
+        app.kubernetes.io/name: {{ include "clickhouse.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- if .Values.clickhouse.imagePullSecrets }}
+      imagePullSecrets:
+    {{- range .Values.clickhouse.imagePullSecrets }}
+      - name: {{ . | quote }}
+    {{- end }}
+    {{- end }}
+      initContainers:
+      - name: init
+        image: busybox:1.31.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - /bin/sh
+        - -c
+        - |
+          mkdir -p /etc/clickhouse-server/metrica.d
+      containers:
+      - name: {{ include "clickhouse.fullname" . }}
+        image: {{ .Values.clickhouse.image }}:{{ .Values.clickhouse.imageVersion }}
+        imagePullPolicy: {{ .Values.clickhouse.imagePullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.clickhouse.resource.request.cpu | quote }}
+            memory: {{ .Values.clickhouse.resource.request.memory }}
+          limits:
+            cpu: {{ .Values.clickhouse.resource.limit.cpu | quote }}
+            memory: {{ .Values.clickhouse.resource.limit.memory }}
+        ports:
+        - name: http-port
+          containerPort: {{ .Values.clickhouse.http_port | default "8123" }} 
+        - name: tcp-port
+          containerPort: {{ .Values.clickhouse.tcp_port | default "9000" }}
+        - name: inter-http-port
+          containerPort: {{ .Values.clickhouse.interserver_http_port | default "9009" }}
+      {{- if .Values.clickhouse.livenessProbe.enabled }}
+        livenessProbe: 
+          tcpSocket:
+            port: {{ .Values.clickhouse.tcp_port }}
+          initialDelaySeconds: {{ .Values.clickhouse.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.clickhouse.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.clickhouse.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.clickhouse.livenessProbe.failureThreshold }}
+          successThreshold: {{ .Values.clickhouse.livenessProbe.successThreshold }}
+      {{- end }}
+      {{- if .Values.clickhouse.readinessProbe.enabled }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Values.clickhouse.tcp_port }}
+          initialDelaySeconds: {{ .Values.clickhouse.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.clickhouse.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.clickhouse.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.clickhouse.readinessProbe.failureThreshold }}
+          successThreshold: {{ .Values.clickhouse.readinessProbe.successThreshold }}
+      {{- end }}
+        volumeMounts:
+        - name: {{ include "clickhouse.fullname" . }}-data
+          mountPath: /var/lib/clickhouse
+        - name: {{ include "clickhouse.fullname" . }}-logs
+          mountPath: /var/log/clickhouse-server
+        - name: {{ include "clickhouse.fullname" . }}-config
+          mountPath: /etc/clickhouse-server/config.d
+        - name: {{ include "clickhouse.fullname" . }}-metrica
+          mountPath: /etc/clickhouse-server/metrica.d
+        - name: {{ include "clickhouse.fullname" . }}-users
+          mountPath: /etc/clickhouse-server/users.d
+        securityContext:
+          privileged: true
+          runAsUser: 0
+      volumes: 
+      - name: {{ include "clickhouse.fullname" . }}-data
+        hostPath:
+          path: /home/{{ include "clickhouse.fullname" . }}/data
+      - name: {{ include "clickhouse.fullname" . }}-logs
+        hostPath:
+          path: /home/{{ include "clickhouse.fullname" . }}/logs
+      - name: {{ include "clickhouse.fullname" . }}-config
+        configMap:
+          name: {{ include "clickhouse.fullname" . }}-config
+          items:
+          - key: config.xml
+            path: config.xml
+      - name: {{ include "clickhouse.fullname" . }}-metrica
+        configMap:
+          name: {{ include "clickhouse.fullname" . }}-metrica
+          items:
+          - key: metrica.xml
+            path: metrica.xml
+      - name: {{ include "clickhouse.fullname" . }}-users
+        configMap:
+          name: {{ include "clickhouse.fullname" . }}-users
+          items:
+          - key: users.xml
+            path: users.xml

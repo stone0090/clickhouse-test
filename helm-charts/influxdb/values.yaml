@@ -1,0 +1,26 @@
+global:
+  namespace: default
+
+app:
+  env:
+    organization: "influxdata"
+    bucket: "test"
+    username: admin
+    password: "admin123456"
+    token: "admin123456"
+    retention_policy: "0s"
+  image:
+    pullPolicy: IfNotPresent
+    registry: influxdb
+    version: 2.3.0
+  resource:
+    request:
+      cpu: 2
+      memory: 4096Mi
+    limit:
+      cpu: 2
+      memory: 4096Mi
+
+service:
+  nodePort: 30886
+  type: NodePort

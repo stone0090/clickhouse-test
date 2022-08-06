@@ -1,0 +1,22 @@
+global:
+  namespace: default
+
+app:
+  env:
+    database: test
+    password: 123456
+  image:
+    pullPolicy: IfNotPresent
+    registry: mysql
+    version: 5.7.39
+  resource:
+    request:
+      cpu: 2
+      memory: 4096Mi
+    limit:
+      cpu: 2
+      memory: 4096Mi
+
+service:
+  nodePort: 30336
+  type: NodePort

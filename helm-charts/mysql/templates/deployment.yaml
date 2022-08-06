@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        args:
+        - --character-set-server=utf8mb4
+        - --collation-server=utf8mb4_unicode_ci
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: MYSQL_ROOT_PASSWORD
+          value: {{ .Values.app.env.password | quote }}
+        - name: MYSQL_DATABASE
+          value: {{ .Values.app.env.database | quote }}
+        image: {{ .Values.app.image.registry }}:{{ .Values.app.image.version }}
+        imagePullPolicy: {{  default "IfNotPresent" .Values.app.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.app.resource.request.cpu | quote }}
+            memory: {{ .Values.app.resource.request.memory | quote }}
+          limits:
+            cpu: {{ .Values.app.resource.limit.cpu | quote }}
+            memory: {{ .Values.app.resource.limit.memory | quote }}
+        ports:
+        - containerPort: 3306
+          name: mysql-port-name
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql-data
+      volumes:
+      - name: mysql-data
+        hostPath:
+          path: /home/{{ .Chart.Name }}/data

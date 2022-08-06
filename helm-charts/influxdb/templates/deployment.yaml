@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        - name: DOCKER_INFLUXDB_INIT_MODE
+          value: setup  
+        - name: DOCKER_INFLUXDB_INIT_USERNAME
+          value: {{ .Values.app.env.username | quote }}
+        - name: DOCKER_INFLUXDB_INIT_PASSWORD
+          value: {{ .Values.app.env.password | quote }}
+        - name: DOCKER_INFLUXDB_INIT_ORG
+          value: {{ .Values.app.env.organization | quote }}
+        - name: DOCKER_INFLUXDB_INIT_BUCKET
+          value: {{ .Values.app.env.bucket | quote }}
+        - name: DOCKER_INFLUXDB_INIT_RETENTION
+          value: {{ .Values.app.env.retention_policy | quote }}
+        - name: DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+          value: {{ .Values.app.env.token | quote }}
+        image: {{ .Values.app.image.registry }}:{{ .Values.app.image.version }}
+        imagePullPolicy: {{  default "IfNotPresent" .Values.app.image.pullPolicy }}
+        resources:
+          requests:
+            cpu: {{ .Values.app.resource.request.cpu | quote }}
+            memory: {{ .Values.app.resource.request.memory | quote }}
+          limits:
+            cpu: {{ .Values.app.resource.limit.cpu | quote }}
+            memory: {{ .Values.app.resource.limit.memory | quote }}
+        ports:
+        - containerPort: 8086
+          name: influxdb-port
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /var/lib/influxdb2
+          name: influxdb-data
+        - mountPath: /etc/influxdb2
+          name: influxdb-config
+      volumes:
+      - name: influxdb-data
+        hostPath:
+          path: /home/{{ .Chart.Name }}/data
+      - name: influxdb-config
+        hostPath:
+          path: /home/{{ .Chart.Name }}/config
