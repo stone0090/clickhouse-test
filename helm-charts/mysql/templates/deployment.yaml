@@ -42,7 +42,12 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: mysql-data
+        - mountPath: /tmp/csv
+          name: mysql-csv
       volumes:
       - name: mysql-data
         hostPath:
           path: /home/{{ .Chart.Name }}/data
+      - name: mysql-csv
+        hostPath:
+          path: /home/csv

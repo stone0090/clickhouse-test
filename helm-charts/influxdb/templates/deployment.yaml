@@ -51,6 +51,8 @@ spec:
           name: influxdb-data
         - mountPath: /etc/influxdb2
           name: influxdb-config
+        - mountPath: /tmp/csv
+          name: influxdb-csv
       volumes:
       - name: influxdb-data
         hostPath:
@@ -58,3 +60,6 @@ spec:
       - name: influxdb-config
         hostPath:
           path: /home/{{ .Chart.Name }}/config
+      - name: influxdb-csv
+        hostPath:
+          path: /home/csv

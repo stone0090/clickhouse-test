@@ -76,12 +76,8 @@ spec:
           mountPath: /var/lib/clickhouse
         - name: {{ include "clickhouse.fullname" . }}-logs
           mountPath: /var/log/clickhouse-server
-        - name: {{ include "clickhouse.fullname" . }}-config
-          mountPath: /etc/clickhouse-server/config.d
-        - name: {{ include "clickhouse.fullname" . }}-metrica
-          mountPath: /etc/clickhouse-server/metrica.d
-        - name: {{ include "clickhouse.fullname" . }}-users
-          mountPath: /etc/clickhouse-server/users.d
+        - name: {{ include "clickhouse.fullname" . }}-csv
+          mountPath: /tmp/csv
         securityContext:
           privileged: true
           runAsUser: 0
@@ -92,21 +88,6 @@ spec:
       - name: {{ include "clickhouse.fullname" . }}-logs
         hostPath:
           path: /home/{{ include "clickhouse.fullname" . }}/logs
-      - name: {{ include "clickhouse.fullname" . }}-config
-        configMap:
-          name: {{ include "clickhouse.fullname" . }}-config
-          items:
-          - key: config.xml
-            path: config.xml
-      - name: {{ include "clickhouse.fullname" . }}-metrica
-        configMap:
-          name: {{ include "clickhouse.fullname" . }}-metrica
-          items:
-          - key: metrica.xml
-            path: metrica.xml
-      - name: {{ include "clickhouse.fullname" . }}-users
-        configMap:
-          name: {{ include "clickhouse.fullname" . }}-users
-          items:
-          - key: users.xml
-            path: users.xml
+      - name: {{ include "clickhouse.fullname" . }}-csv
+        hostPath:
+          path: /home/csv
