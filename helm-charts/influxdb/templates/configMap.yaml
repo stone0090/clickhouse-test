@@ -23,6 +23,3 @@ data:
       cache-snapshot-write-cold-duration = "30m"
       compact-throughput = "16m"
       compact-throughput-burst = "16m"
-
-    [monitor]
-      store-enabled = false
