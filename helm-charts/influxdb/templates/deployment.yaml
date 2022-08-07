@@ -49,17 +49,17 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/influxdb
           name: influxdb-data
-        - mountPath: /etc/influxdb
-          name: influxdb-config
-        - mountPath: /tmp/csv
-          name: influxdb-csv
+        - mountPath: /tmp/flightlist
+          name: influxdb-test
+        - mountPath: /etc/influxdb/
+          name: config-map-volume
       volumes:
       - name: influxdb-data
         hostPath:
-          path: /home/{{ .Chart.Name }}/data
-      - name: influxdb-config
-        hostPath:
-          path: /home/{{ .Chart.Name }}/config
-      - name: influxdb-csv
+          path: /home/{{ .Chart.Name }}
+      - name: config-map-volume
+        configMap:
+          name: {{ .Chart.Name }}-config          
+      - name: influxdb-test
         hostPath:
           path: /home/flightlist

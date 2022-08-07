@@ -76,8 +76,8 @@ spec:
           mountPath: /var/lib/clickhouse
         - name: {{ include "clickhouse.fullname" . }}-logs
           mountPath: /var/log/clickhouse-server
-        - name: {{ include "clickhouse.fullname" . }}-csv
-          mountPath: /tmp/csv
+        - name: {{ include "clickhouse.fullname" . }}-test
+          mountPath: /tmp/flightlist
         securityContext:
           privileged: true
           runAsUser: 0
@@ -88,6 +88,6 @@ spec:
       - name: {{ include "clickhouse.fullname" . }}-logs
         hostPath:
           path: /home/{{ include "clickhouse.fullname" . }}/logs
-      - name: {{ include "clickhouse.fullname" . }}-csv
+      - name: {{ include "clickhouse.fullname" . }}-test
         hostPath:
           path: /home/flightlist

@@ -15,11 +15,11 @@ app:
     version: 1.8
   resource:
     request:
-      cpu: 2
-      memory: 4096Mi
+      cpu: 4
+      memory: 16384Mi
     limit:
-      cpu: 2
-      memory: 4096Mi
+      cpu: 4
+      memory: 16384Mi
 
 service:
   nodePort: 30886

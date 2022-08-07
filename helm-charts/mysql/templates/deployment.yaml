@@ -43,11 +43,11 @@ spec:
         - mountPath: /var/lib/mysql
           name: mysql-data
         - mountPath: /var/lib/mysql-files
-          name: mysql-csv
+          name: mysql-test
       volumes:
       - name: mysql-data
         hostPath:
           path: /home/{{ .Chart.Name }}/data
-      - name: mysql-csv
+      - name: mysql-test
         hostPath:
           path: /home/flightlist

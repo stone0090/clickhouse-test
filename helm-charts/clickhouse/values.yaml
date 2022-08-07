@@ -8,11 +8,11 @@ clickhouse:
   imagePullPolicy: "IfNotPresent"  
   resource:
     request:
-      cpu: 2
-      memory: 4096Mi
+      cpu: 4
+      memory: 16384Mi
     limit:
-      cpu: 2
-      memory: 4096Mi  
+      cpu: 4
+      memory: 16384Mi
   #imagePullSecrets: 
   ## Periodic probe of container liveness. Container will be restarted if the probe fails. Cannot be updated. 
   ## More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes
