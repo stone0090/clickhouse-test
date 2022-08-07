@@ -50,14 +50,14 @@ $ kubectl taint nodes --all node-role.kubernetes.io/master-
 $ kubectl taint nodes --all node-role.kubernetes.io/control-plane-
 
 # 获取 mysql、influxdb、clickhouse 一键安装 Helm-Charts
-$ wget https://github.com/stone0090/clickhouse-test/archive/refs/tags/v1.0.0-beta.tar.gz
-$ tar -zxvf v1.0.0-beta.tar.gz
+$ wget https://github.com/stone0090/clickhouse-test/archive/refs/tags/v1.0.0.tar.gz
+$ tar -zxvf v1.0.0.tar.gz
 
 # 安装 Kubernetes 包管理工具 Helm，以及 mysql、influxdb、clickhouse 3大数据库
 $ sealos run labring/helm:v3.8.2
-$ helm install mysql clickhouse-test-1.0.0-beta/helm-charts/mysql/
-$ helm install influxdb clickhouse-test-1.0.0-beta/helm-charts/influxdb/
-$ helm install clickhouse clickhouse-test-1.0.0-beta/helm-charts/clickhouse/
+$ helm install mysql clickhouse-test-1.0.0/helm-charts/mysql/
+$ helm install influxdb clickhouse-test-1.0.0/helm-charts/influxdb/
+$ helm install clickhouse clickhouse-test-1.0.0/helm-charts/clickhouse/
 ```
 ### 数据导入
 直接使用 ClickHouse 官方提供的测试数据 [https://clickhouse.com/docs/zh/getting-started/example-datasets/opensky](https://clickhouse.com/docs/zh/getting-started/example-datasets/opensky)，此数据集中的数据是从完整的 OpenSky 数据集中派生和清理而来的，以说明 COVID-19 新冠肺炎大流行期间空中交通的发展情况。它涵盖了自2019年1月1日以来该网络超过2500名成员看到的所有航班，总数据量有6600w。
@@ -69,7 +69,7 @@ $ wget -O- https://zenodo.org/record/5092942 | grep -oP 'https://zenodo.org/reco
 $ for file in flightlist_*.csv.gz; do gzip -d "$file"; done
 
 # 将 csv 处理成 influxdb 导入所需的 txt 格式（此过程大概耗时1小时）
-$ python clickhouse-test-1.0.0-beta/helm-charts/influxdb_csv2txt.py
+$ python clickhouse-test-1.0.0/influxdb_csv2txt.py
 ```
 #### MySQL
 ```bash
@@ -93,7 +93,7 @@ $ select count(*) from test.opensky;
 # 进入 influxdb pod
 $ kubectl exec -it [influxdb-podname] -- bash
 
-# 导入数据（大概耗时90分钟，16点25开始）
+# 导入数据（大概耗时30分钟）
 $ influx -username 'admin' -password 'admin123456' -import -path=/tmp/flightlist/flightlist_20190101_20190131.txt -precision=ns;
 # 省略其他29条导入命令：influx -username 'admin' -password 'admin123456' -import -path=/tmp/flightlist/flightlist_*_*.txt -precision=ns;
 
@@ -205,11 +205,8 @@ SELECT origin, count() AS c FROM opensky WHERE origin IN ('UUEE', 'UUDD', 'UUWW'
 最终的结论是，在 6600w 数据量下，ClickHouse 无论是导入速度、磁盘占用、查询性能都完全碾压 MySQL 和 InfluxDB，其中 InfluxDB 表现比想象中的要差，甚至还不如 MySQL，也有可能是我的数据样本和测试用例并不适合 InfluxDB 场景导致的，大家如果对测试结果有疑问，可以自行 `git clone [https://github.com/stone0090/clickhouse-test.git](https://github.com/stone0090/clickhouse-test.git)`项目完整体验以上对比过程。
 ### 参考引用
 
-- [InfluxDB与MySQL的性能测试 - 走看看](http://t.zoukankan.com/juanxincai-p-14736218.html)
 - [识堂 | 笔记分享讨论社区，让知识说话](https://www.yinxiang.com/everhub/note/d134fecc-b51a-4a6b-a3d2-cff6f903bb7d)
 - [InfluxDB优化配置项_sqtce的技术博客_51CTO博客](https://blog.51cto.com/u_536410/5399323)
 - [influxDB系列（二）--查看数据库的大小 - 立志做一个好的程序员 - 博客园](https://www.cnblogs.com/oxspirt/p/7132235.html)
-- [InfluxDB与MySQL的性能测试 - 卷心菜的奇妙历险 - 博客园](https://www.cnblogs.com/juanxincai/p/14736218.html)
 - [ClickHouse 基础介绍 - 走看看](http://t.zoukankan.com/VicLiu-p-15661858.html)
 - [Clickhouse技术分享_大数据_scalad_InfoQ写作社区](https://xie.infoq.cn/article/e6e2658fe7d512f0d2f5b3325?source=app_share)
-- [Hologres vs Clickhouse性能对比参考测试 - 实时数仓Hologres - 阿里云](https://help.aliyun.com/document_detail/300377.html?spm=5176.12818093.help.dexternal.3be916d0aK7NfW&scm=20140722.S_help%40%40%E6%96%87%E6%A1%A3%40%40300377.S_hot%2Bos0.ID_300377-RL_clickhouse%20%E6%80%A7%E8%83%BD%E6%B5%8B%E8%AF%95-LOC_consoleUNDhelp-OR_ser-V_2-P0_1)
