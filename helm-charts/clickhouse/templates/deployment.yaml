@@ -90,4 +90,4 @@ spec:
           path: /home/{{ include "clickhouse.fullname" . }}/logs
       - name: {{ include "clickhouse.fullname" . }}-csv
         hostPath:
-          path: /home/csv
+          path: /home/flightlist

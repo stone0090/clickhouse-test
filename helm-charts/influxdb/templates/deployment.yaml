@@ -47,9 +47,9 @@ spec:
           name: influxdb-port
           protocol: TCP
         volumeMounts:
-        - mountPath: /var/lib/influxdb2
+        - mountPath: /var/lib/influxdb
           name: influxdb-data
-        - mountPath: /etc/influxdb2
+        - mountPath: /etc/influxdb
           name: influxdb-config
         - mountPath: /tmp/csv
           name: influxdb-csv
@@ -62,4 +62,4 @@ spec:
           path: /home/{{ .Chart.Name }}/config
       - name: influxdb-csv
         hostPath:
-          path: /home/csv
+          path: /home/flightlist

@@ -12,7 +12,7 @@ app:
   image:
     pullPolicy: IfNotPresent
     registry: influxdb
-    version: 2.3.0
+    version: 1.8
   resource:
     request:
       cpu: 2
