@@ -1,5 +1,3 @@
-# ClickHouse、InfluxDB、MySQL 综合对比
-
 ### 前言
 在我的工作场景中，会采集大量工厂设备数据，数据的存储和分析都是用的 InfluxDB，但随着数据规模越来越大，InfluxDB 的性能越来越差，千万级数据的聚合查询很慢，故考虑引入 ClickHouse 分担 InfluxDB 大数据分析的压力，再加上我们业务上也用到了 MySQL ，所以本文的重点是对比 MySQL、InfluxDB、ClickHouse 在六千万数据量下的写入耗时、聚合查询耗时、磁盘占用等各方面性能指标。
 ### 数据库简介
@@ -190,8 +188,7 @@ SELECT origin, count() AS c FROM opensky WHERE origin IN ('UUEE', 'UUDD', 'UUWW'
 ### 测试结论
 为了确保测试结果相对准确，每条sql起码执行5次取中间值，验证结果如下表格所示：
 
-| 
- | MySQL | InfluxDB | ClickHouse |
+| - | MySQL | InfluxDB | ClickHouse |
 | --- | --- | --- | --- |
 | 导入耗时 | 大概耗时70分钟 | 大概耗时35分钟 | 75秒 |
 | 磁盘空间 | 12.35 G | 5.9 G | 2.66 G |
