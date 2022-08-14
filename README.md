@@ -4,7 +4,7 @@
 ### 结论先行
 最终的结论是，直接使用 ClickHouse 官网提供的 6600w 数据集来做对比测试，在 MySQL、InfluxDB、ClickHouse 同样分配 4c16g 资源的情况下，ClickHouse 无论是导入速度、磁盘占用、查询性能都完全碾压 MySQL 和 InfluxDB，具体对比指标如以下表格：
 
-| MySQL | InfluxDB | ClickHouse |
+| | MySQL | InfluxDB | ClickHouse |
 | --- | --- | --- | --- |
 | 导入耗时 | 大概耗时70分钟 | 大概耗时35分钟 | 75秒 |
 | 磁盘空间 | 12.35 G | 5.9 G | 2.66 G |
